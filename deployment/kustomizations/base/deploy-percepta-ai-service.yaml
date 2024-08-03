@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: percepta-ai-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: percepta-ai-service
+  template:
+    metadata:
+      labels:
+        app: percepta-ai-service
+    spec:
+      containers:
+        - name: percepta-ai-service
+          image: ghcr.io/canner/percepta-ai-service:0.3.7
+          env:
+          - name: WREN_AI_SERVICE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: WREN_AI_SERVICE_PORT
+          - name: LLM_PROVIDER
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: LLM_PROVIDER
+          - name: LLM_OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wrenai-secrets
+                key: LLM_OPENAI_API_KEY
+          - name: LLM_OPENAI_API_BASE
+            valueFrom: 
+              configMapKeyRef:
+                name: wren-config
+                key: LLM_OPENAI_API_BASE
+          - name: EMBEDDER_PROVIDER
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: EMBEDDER_PROVIDER
+          - name: EMBEDDER_OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wrenai-secrets
+                key: EMBEDDER_OPENAI_API_KEY
+          - name: EMBEDDER_OPENAI_API_BASE
+            valueFrom: 
+              configMapKeyRef:
+                name: wren-config
+                key: EMBEDDER_OPENAI_API_BASE
+          - name: GENERATION_MODEL
+            valueFrom: 
+              configMapKeyRef:
+                name: wren-config
+                key: GENERATION_MODEL
+          - name: QDRANT_HOST
+            valueFrom:
+              secretKeyRef:
+                name: wrenai-secrets
+                key: QDRANT_HOST
+          - name: DOCUMENT_STORE_PROVIDER
+            valueFrom:
+              secretKeyRef:
+                name: wrenai-secrets
+                key: DOCUMENT_STORE_PROVIDER
+          - name: WREN_ENGINE_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: WREN_ENGINE_ENDPOINT
+          - name: LOGGING_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: LOGGING_LEVEL
+          - name: WREN_UI_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: WREN_UI_ENDPOINT
+          - name: ENABLE_TIMER
+            valueFrom:
+              configMapKeyRef:
+                name: wren-config
+                key: WREN_AI_SERVICE_ENABLE_TIMER
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          ports:
+            - containerPort: 5555
